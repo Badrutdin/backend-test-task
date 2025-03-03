@@ -10,7 +10,7 @@ PHONY: help
 help: ## This help.
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-init: down build install up $(if $(filter reset,$(MAKECMDGOALS)), $(MAKE) reset-app, ) success-message  ## Initialize environment
+init: down build install up reset-app-if-needed success-message  ## Initialize environment
 
 build: ## Build services.
 	${DC} build $(c)
@@ -52,7 +52,10 @@ reset-app: ## DROP DATABASE, DELETE MIGRATIONS, apply new migration, start fixtu
 	else \
 		echo "Operation cancelled."; \
 	fi
-
+reset-app-if-needed: ## If reset flag = "yes", call reset-app
+ifeq ($(reset),yes)
+	$(MAKE) reset-app
+endif
 success-message:
 	@echo "You can now access the application at http://localhost:8337"
 	@echo "Good luck! 🚀"
