@@ -5,22 +5,21 @@ namespace Controller;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class PurchaseControllerTest extends WebTestCase
+class CalculateControllerTest extends WebTestCase
 {
-    public function testPurchaseSuccess(): void
+    public function testCalculateSuccess(): void
     {
         $client = static::createClient();
 
         $data = [
             'product' => 1,
-            'paymentProcessor' => 'paypal',
             'taxNumber' => 'DE123456789',
             'couponCode' => 'P100'
         ];
 
         $client->request(
             method: 'POST',
-            uri: '/purchase',
+            uri: '/calculate-price',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode($data)
         );
@@ -29,23 +28,52 @@ class PurchaseControllerTest extends WebTestCase
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertJsonStringEqualsJsonString(json_encode(['status' => 'success']), $response->getContent());
+        $result = json_decode($response->getContent(), true);
+        $price = $result['price'];
+        $this->assertArrayHasKey('price', $result, 'The response does not contain the "price" field.');
+        $this->assertTrue(
+            is_float($price) || $price === 0,
+            'The "price" field must be float or 0'
+        );
     }
 
-    public function testPurchaseValidationError(): void
+    public function testCalculateDeserializationError(): void
+    {
+        $client = static::createClient();
+
+        $data = [
+            'product' => 'INVALID_PRODUCT_TYPE',
+            'taxNumber' => 'DE123456789',
+            'couponCode' => 'P100'
+        ];
+
+        $client->request(
+            method: 'POST',
+            uri: '/calculate-price',
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode($data)
+        );
+
+        $response = $client->getResponse();
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseData = json_decode($response->getContent(), true);
+        $this->assertArrayHasKey('error', $responseData);
+    }
+
+    public function testCalculateValidationError(): void
     {
         $client = static::createClient();
 
         $data = [
             'product' => 1,
-            'paymentProcessor' => 'paypal',
             'taxNumber' => 'INVALID_TAX_NUMBER',
             'couponCode' => 'P100'
         ];
 
         $client->request(
             method: 'POST',
-            uri: '/purchase',
+            uri: '/calculate-price',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode($data)
         );
@@ -53,57 +81,8 @@ class PurchaseControllerTest extends WebTestCase
         $response = $client->getResponse();
 
         $this->assertEquals(400, $response->getStatusCode());
-
         $responseData = json_decode($response->getContent(), true);
         $this->assertArrayHasKey('errors', $responseData);
     }
 
-    public function testPurchaseDeserializationError(): void
-    {
-        $client = static::createClient();
-
-        $data = [
-            'product' => 'INVALID_PRODUCT_TYPE',
-            'paymentProcessor' => 'paypal',
-            'taxNumber' => 'DE123456789',
-            'couponCode' => 'P100'
-        ];
-
-        $client->request(
-            method: 'POST',
-            uri: '/purchase',
-            server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode($data)
-        );
-
-        $response = $client->getResponse();
-
-        $this->assertEquals(400, $response->getStatusCode());
-
-        $responseData = json_decode($response->getContent(), true);
-        $this->assertArrayHasKey('error', $responseData);
-    }
-
-    public function testPurchasePaymentFailed(): void
-    {
-        $client = static::createClient();
-
-        $data = [
-            'product' => 1,
-            'paymentProcessor' => 'stripe',
-            'taxNumber' => 'DE123456789',
-            'couponCode' => 'P100'
-        ];
-
-        $client->request(
-            method: 'POST',
-            uri: '/purchase',
-            server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode($data));
-
-        $response = $client->getResponse();
-
-        $this->assertEquals(400, $response->getStatusCode());
-        $this->assertJsonStringEqualsJsonString(json_encode(['error' => 'Payment failed']), $response->getContent());
-    }
 }

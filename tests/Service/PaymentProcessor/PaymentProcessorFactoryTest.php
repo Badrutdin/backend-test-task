@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Service\PaymentProcessor;
+namespace Service\PaymentProcessor;
 
 use App\Service\PaymentProcessor\PaymentProcessorFactory;
 use App\Service\PaymentProcessor\PaypalProcessorAdapter;

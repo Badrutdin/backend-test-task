@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Tests\Service;
+namespace Service;
 
-use PHPUnit\Framework\TestCase;
 use App\Service\TaxCalculator;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
 
 class TaxCalculatorTest extends TestCase
 {
