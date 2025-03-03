@@ -6,7 +6,7 @@ Content-Type: application/json
 {
   "product": 1,
   "taxNumber": "DE123456789",
-  "couponCode": "D15"
+  "couponCode": "P15"
 }
 
 ### Execute Purchase
