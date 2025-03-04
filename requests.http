@@ -1,4 +1,4 @@
-### Calculate Price
+### Calculate Price | Success
 POST http://127.0.0.1:8337/calculate-price
 Accept: application/json
 Content-Type: application/json
@@ -8,15 +8,77 @@ Content-Type: application/json
   "taxNumber": "DE123456789",
   "couponCode": "P15"
 }
+### Calculate Price | Success without coupon
+POST http://127.0.0.1:8337/calculate-price
+Accept: application/json
+Content-Type: application/json
 
-### Execute Purchase
+{
+  "product": 1,
+  "taxNumber": "DE123456789"
+}
+### Calculate Price | Deseriealization error
+POST http://127.0.0.1:8337/calculate-price
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": "INVALID_PRODUCT_TYPE",
+  "taxNumber": "DE123456789",
+  "couponCode": "F100"
+}
+### Calculate Price | Validation error
+POST http://127.0.0.1:8337/calculate-price
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": 1,
+  "taxNumber": "DE1234567891",
+  "couponCode": "F100"
+}
+
+### Execute Purchase | Success
 POST http://127.0.0.1:8337/purchase
 Accept: application/json
 Content-Type: application/json
 
 {
   "product": 1,
-  "taxNumber": "IT12345678900",
-  "couponCode": "P15",
+  "taxNumber": "DE123456789",
+  "couponCode": "F100",
   "paymentProcessor": "paypal"
+}
+### Execute Purchase | Success without coupon
+POST http://127.0.0.1:8337/purchase
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": 1,
+  "taxNumber": "DE123456789",
+  "paymentProcessor": "paypal"
+}
+### Execute Purchase | Deseriealization error
+POST http://127.0.0.1:8337/purchase
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": "1",
+  "taxNumber": "DE1234567891",
+  "couponCode": "F100",
+  "paymentProcessor": "paypal"
+}
+
+### Execute Purchase | Validation error
+POST http://127.0.0.1:8337/purchase
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": 1,
+  "taxNumber": "DE123456789",
+  "couponCode": "F100",
+  "paymentProcessor": "stripe"
 }
