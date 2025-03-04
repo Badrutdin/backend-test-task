@@ -13,11 +13,23 @@ class TaxCalculator
 
     public function calculateTax(float $price, string $taxNumber): float
     {
-        $countryCode = substr($taxNumber, 0, 2);
-        if (!isset(self::TAX_RATES[$countryCode])) {
-            throw new \InvalidArgumentException('Invalid country code');
-        }
+        $rate = $this->getCountryFromPattern($taxNumber);
 
-        return $price * self::TAX_RATES[$countryCode];
+        return $price * $rate;
+    }
+
+    private function getCountryFromPattern($taxNumber)
+    {
+        $pattern = '/^(DE\d{9}|IT\d{11}|GR\d{9}|FR[A-Z]{2}\d{9})$/';
+
+        if (preg_match($pattern, $taxNumber, $matches)) {
+            $countryCode = substr($taxNumber, 0, 2);
+
+
+            return self::TAX_RATES[$countryCode];
+        } else {
+
+            throw new \InvalidArgumentException('Tax number must start with a valid country code (DE, IT, GR, FR) and the correct length.');
+        }
     }
 } 

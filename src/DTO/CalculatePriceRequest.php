@@ -13,7 +13,7 @@ class CalculatePriceRequest
     #[Assert\NotBlank]
     #[Assert\Regex(
         pattern: '/^(DE\d{9}|IT\d{11}|GR\d{9}|FR[A-Z]{2}\d{9})$/',
-        message: 'Invalid tax number format'
+        message: 'Tax number must start with a valid country code (DE, IT, GR, FR) and the correct length.'
     )]
     private string $taxNumber;
 

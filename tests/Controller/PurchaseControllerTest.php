@@ -39,7 +39,7 @@ class PurchaseControllerTest extends WebTestCase
         $data = [
             'product' => 1,
             'paymentProcessor' => 'paypal',
-            'taxNumber' => 'INVALID_TAX_NUMBER',
+            'taxNumber' => 'DE1234567891',
             'couponCode' => 'P100'
         ];
 

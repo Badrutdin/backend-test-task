@@ -28,7 +28,7 @@ class TaxCalculatorTest extends TestCase
     public function testInvalidCountryCode(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->taxCalculator->calculateTax(100, 'US123456789');
+        $this->taxCalculator->calculateTax(100, 'DE1234567891');
     }
 
     // Провайдер тестовых данных

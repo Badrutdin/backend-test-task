@@ -67,7 +67,7 @@ class CalculateControllerTest extends WebTestCase
 
         $data = [
             'product' => 1,
-            'taxNumber' => 'INVALID_TAX_NUMBER',
+            'taxNumber' => 'DE1234567891',
             'couponCode' => 'P100'
         ];
 
