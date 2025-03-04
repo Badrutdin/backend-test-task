@@ -14,7 +14,7 @@ class CalculateControllerTest extends WebTestCase
         $data = [
             'product' => 1,
             'taxNumber' => 'DE123456789',
-            'couponCode' => 'P100'
+            'couponCode' => 'F100'
         ];
 
         $client->request(
@@ -44,7 +44,7 @@ class CalculateControllerTest extends WebTestCase
         $data = [
             'product' => 'INVALID_PRODUCT_TYPE',
             'taxNumber' => 'DE123456789',
-            'couponCode' => 'P100'
+            'couponCode' => 'F100'
         ];
 
         $client->request(
@@ -68,7 +68,7 @@ class CalculateControllerTest extends WebTestCase
         $data = [
             'product' => 1,
             'taxNumber' => 'DE1234567891',
-            'couponCode' => 'P100'
+            'couponCode' => 'F100'
         ];
 
         $client->request(

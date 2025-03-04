@@ -54,7 +54,7 @@ class PriceCalculatorTest extends TestCase
 
         // Проверяем расчет
         // 100 EUR - 15% = 85 EUR + 19% налог = 101.15 EUR
-        $price = $this->priceCalculator->calculate(1, 'DE123456789', 'D15');
+        $price = $this->priceCalculator->calculate(1, 'DE123456789', 'P15');
         $this->assertEquals(101.15, $price);
     }
 

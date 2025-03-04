@@ -15,7 +15,7 @@ class PurchaseControllerTest extends WebTestCase
             'product' => 1,
             'paymentProcessor' => 'paypal',
             'taxNumber' => 'DE123456789',
-            'couponCode' => 'P100'
+            'couponCode' => 'F100'
         ];
 
         $client->request(
@@ -40,7 +40,7 @@ class PurchaseControllerTest extends WebTestCase
             'product' => 1,
             'paymentProcessor' => 'paypal',
             'taxNumber' => 'DE1234567891',
-            'couponCode' => 'P100'
+            'couponCode' => 'F100'
         ];
 
         $client->request(
@@ -66,7 +66,7 @@ class PurchaseControllerTest extends WebTestCase
             'product' => 'INVALID_PRODUCT_TYPE',
             'paymentProcessor' => 'paypal',
             'taxNumber' => 'DE123456789',
-            'couponCode' => 'P100'
+            'couponCode' => 'F100'
         ];
 
         $client->request(
@@ -92,7 +92,7 @@ class PurchaseControllerTest extends WebTestCase
             'product' => 1,
             'paymentProcessor' => 'stripe',
             'taxNumber' => 'DE123456789',
-            'couponCode' => 'P100'
+            'couponCode' => 'F100'
         ];
 
         $client->request(

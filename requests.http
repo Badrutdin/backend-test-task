@@ -17,6 +17,6 @@ Content-Type: application/json
 {
   "product": 1,
   "taxNumber": "IT12345678900",
-  "couponCode": "D15",
+  "couponCode": "P15",
   "paymentProcessor": "paypal"
 }

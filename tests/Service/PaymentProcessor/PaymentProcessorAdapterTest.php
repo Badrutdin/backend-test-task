@@ -10,27 +10,32 @@ use Systemeio\TestForCandidates\PaymentProcessor\StripePaymentProcessor;
 
 class PaymentProcessorAdapterTest extends TestCase
 {
+    private PaypalProcessorAdapter $paypalProcessorAdapter;
+    private StripeProcessorAdapter $stripeProcessorAdapter;
+
     public function testPaypalProcessorSuccess(): void
     {
-        $adapter = new PaypalProcessorAdapter(new PaypalPaymentProcessor());
-        $this->assertTrue($adapter->process(50.0)); // 5000 центов - должно пройти
+        $this->assertTrue($this->paypalProcessorAdapter->process(999.09)); // 99909 центов - должно пройти
     }
 
     public function testPaypalProcessorFailure(): void
     {
-        $adapter = new PaypalProcessorAdapter(new PaypalPaymentProcessor());
-        $this->assertFalse($adapter->process(1500.0)); // 150000 центов - должно провалиться
+        $this->assertFalse($this->paypalProcessorAdapter->process(1000.01)); // 100001 цент - должно провалиться
     }
 
     public function testStripeProcessorSuccess(): void
     {
-        $adapter = new StripeProcessorAdapter(new StripePaymentProcessor());
-        $this->assertTrue($adapter->process(150.0)); // > 100 - должно пройти
+        $this->assertTrue($this->stripeProcessorAdapter->process(100.01)); // > 100 - должно пройти
     }
 
     public function testStripeProcessorFailure(): void
     {
-        $adapter = new StripeProcessorAdapter(new StripePaymentProcessor());
-        $this->assertFalse($adapter->process(50.0)); // < 100 - должно провалиться
+        $this->assertFalse($this->stripeProcessorAdapter->process(90.09)); // < 100 - должно провалиться
+    }
+
+    protected function setUp(): void
+    {
+        $this->paypalProcessorAdapter = new PaypalProcessorAdapter(new PaypalPaymentProcessor());
+        $this->stripeProcessorAdapter = new StripeProcessorAdapter(new StripePaymentProcessor());
     }
 } 

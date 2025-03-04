@@ -29,13 +29,13 @@ class AppFixtures extends Fixture
 
         // Создаем купоны
         $percentCoupon = new Coupon();
-        $percentCoupon->setCode('D15');
+        $percentCoupon->setCode('P15');
         $percentCoupon->setType('percentage');
         $percentCoupon->setValue(15);
         $manager->persist($percentCoupon);
 
         $fixedCoupon = new Coupon();
-        $fixedCoupon->setCode('P100');
+        $fixedCoupon->setCode('F100');
         $fixedCoupon->setType('fixed');
         $fixedCoupon->setValue(100);
         $manager->persist($fixedCoupon);
