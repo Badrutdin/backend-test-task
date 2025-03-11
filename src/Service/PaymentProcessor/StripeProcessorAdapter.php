@@ -14,4 +14,9 @@ class StripeProcessorAdapter implements PaymentProcessorInterface
     {
         return $this->processor->processPayment($amount);
     }
-} 
+
+    public static function getType(): string
+    {
+        return 'stripe';
+    }
+}

@@ -20,4 +20,9 @@ class PaypalProcessorAdapter implements PaymentProcessorInterface
             return false;
         }
     }
-} 
+
+    public static function getType(): string
+    {
+        return 'paypal';
+    }
+}

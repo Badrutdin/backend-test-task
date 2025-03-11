@@ -3,35 +3,74 @@
 namespace Service\PaymentProcessor;
 
 use App\Service\PaymentProcessor\PaymentProcessorFactory;
-use App\Service\PaymentProcessor\PaypalProcessorAdapter;
-use App\Service\PaymentProcessor\StripeProcessorAdapter;
+use App\Service\PaymentProcessor\PaymentProcessorInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class PaymentProcessorFactoryTest extends TestCase
 {
-    private PaymentProcessorFactory $factory;
-
-    public function testCreatePaypalProcessor(): void
+    public static function invalidProcessorTypesProvider(): array
     {
-        $processor = $this->factory->create('paypal');
-        $this->assertInstanceOf(PaypalProcessorAdapter::class, $processor);
-
+        $paypalProcessor = (new self('PaymentProcessorFactoryTest'))->createMock(PaymentProcessorInterface::class);
+        $stripeProcessor = (new self('PaymentProcessorFactoryTest'))->createMock(PaymentProcessorInterface::class);
+        return [
+            'Invalid type with populated factory' => [
+                ['paypal' => $paypalProcessor, 'stripe' => $stripeProcessor],
+                'invalid_type'
+            ],
+            'Invalid type with empty factory' => [
+                [],
+                'invalid_type'
+            ],
+            'Valid type with empty factory' => [
+                [],
+                'stripe'
+            ],
+            'Valid type with incomplete factory' => [
+                [],
+                'stripe'
+            ],
+        ];
     }
 
-    public function testCreateStripeProcessor(): void
+    public function testCreateReturnsCorrectProcessor()
     {
-        $processor = $this->factory->create('stripe');
-        $this->assertInstanceOf(StripeProcessorAdapter::class, $processor);
+        $paypalProcessor = $this->createMock(PaymentProcessorInterface::class);
+        $stripeProcessor = $this->createMock(PaymentProcessorInterface::class);
+
+        $factory = $this->getFactory([
+            'paypal' => $paypalProcessor,
+            'stripe' => $stripeProcessor,
+        ]);
+
+        $this->assertSame($paypalProcessor, $factory->create('paypal'));
+        $this->assertSame($stripeProcessor, $factory->create('stripe'));
     }
 
-    public function testInvalidProcessorType(): void
+    private function getFactory(array $processors = []): PaymentProcessorFactory
     {
+        return new PaymentProcessorFactory($processors);
+    }
+
+    public function testCreateThrowsExceptionForInvalidTypeWithProcessors()
+    {
+        $paypalProcessor = $this->createMock(PaymentProcessorInterface::class);
+        $factory = $this->getFactory(['paypal' => $paypalProcessor]);
+
         $this->expectException(\InvalidArgumentException::class);
-        $this->factory->create('invalid');
+        $this->expectExceptionMessage("Invalid payment processor type: invalid_type");
+
+        $factory->create('invalid_type');
     }
 
-    protected function setUp(): void
+    #[DataProvider('invalidProcessorTypesProvider')]
+    public function testCreateThrowsExceptionForInvalidType(array $processors, string $invalidType)
     {
-        $this->factory = new PaymentProcessorFactory();
+        $factory = $this->getFactory($processors);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("Invalid payment processor type: $invalidType");
+
+        $factory->create($invalidType);
     }
-} 
+}
