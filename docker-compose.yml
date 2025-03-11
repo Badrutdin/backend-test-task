@@ -11,13 +11,9 @@ services:
             - .:/app:rw
         environment:
             - APP_ENV=dev
-        networks:
-            - app-network
 
     database:
         image: postgres:${POSTGRES_VERSION:-16}-alpine
-        networks:
-            - app-network
         environment:
             POSTGRES_DB: ${POSTGRES_DB:-app}
             # You should definitely change the password in production
@@ -32,6 +28,3 @@ services:
 
 volumes:
     database_data:
-networks:
-    app-network:
-        driver: bridge
