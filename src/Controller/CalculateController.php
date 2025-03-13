@@ -11,6 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+#[Route('/calculate-price', name: 'app_calculate_price', methods: ['POST'])]
 class CalculateController extends AbstractController
 {
     public function __construct(
@@ -21,8 +22,7 @@ class CalculateController extends AbstractController
     {
     }
 
-    #[Route('/calculate-price', name: 'app_calculate_price', methods: ['POST'])]
-    public function calculatePrice(Request $request): Response
+    public function __invoke(Request $request): Response
     {
         try {
             $calculateRequest = $this->serializer->deserialize(
