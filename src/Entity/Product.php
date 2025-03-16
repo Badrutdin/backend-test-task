@@ -15,8 +15,8 @@ class Product
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column]
-    private ?float $price = null;
+    #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
+    private ?string $price = null;
 
     // Геттеры и сеттеры
     public function getId(): ?int
@@ -37,12 +37,12 @@ class Product
 
     public function getPrice(): ?float
     {
-        return $this->price;
+        return (float) $this->price;
     }
 
     public function setPrice(float $price): self
     {
-        $this->price = $price;
+        $this->price = number_format($price,2,'.','');
         return $this;
     }
 } 
