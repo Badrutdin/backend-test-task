@@ -12,7 +12,7 @@ class CalculateControllerTest extends WebTestCase
         $client = static::createClient();
 
         $data = [
-            'product' => 1,
+            'productId' => 1,
             'taxNumber' => 'DE123456789',
             'couponCode' => 'F100'
         ];
@@ -25,7 +25,6 @@ class CalculateControllerTest extends WebTestCase
         );
 
         $response = $client->getResponse();
-
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $result = json_decode($response->getContent(), true);
@@ -82,7 +81,7 @@ class CalculateControllerTest extends WebTestCase
 
         $this->assertEquals(400, $response->getStatusCode());
         $responseData = json_decode($response->getContent(), true);
-        $this->assertArrayHasKey('errors', $responseData);
+        $this->assertArrayHasKey('error', $responseData);
     }
 
 }

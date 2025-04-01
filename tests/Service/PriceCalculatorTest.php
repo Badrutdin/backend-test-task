@@ -7,7 +7,6 @@ use App\Entity\Product;
 use App\Service\PriceCalculator;
 use App\Service\TaxCalculator;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -35,46 +34,19 @@ class PriceCalculatorTest extends TestCase
     #[DataProvider('calculateProvider')]
     public function testCalculateSuccess($taxNumber, $discountValue, $discountType, $exceptedValue, $productPrice): void
     {
-        $productRepo = $this->createMock(EntityRepository::class);
-        $productRepo
-            ->method('find')
-            ->willReturn((new Product())->setPrice($productPrice));
+        $product = (new Product())->setPrice($productPrice);
+        $coupon = (new Coupon())->setType($discountType)->setValue($discountValue);
 
-        $couponRepo = $this->createMock(EntityRepository::class);
-        $couponRepo
-            ->method('findOneBy')
-            ->willReturn((new Coupon())->setType($discountType)->setValue($discountValue));
-
-        $this->entityManager
-            ->method('getRepository')
-            ->willReturnMap([
-                [Product::class, $productRepo],
-                [Coupon::class, $couponRepo],
-            ]);
-
-        $price = $this->priceCalculator->calculate(1, $taxNumber, 'code');
+        $price = $this->priceCalculator->calculate($product, $taxNumber, $coupon);
         $this->assertEquals($exceptedValue, $price);
     }
 
-    public function testProductNotFound(): void
-    {
-        $productRepo = $this->createMock(EntityRepository::class);
-        $productRepo->method('find')->willReturn(null);
-
-        $this->entityManager
-            ->method('getRepository')
-            ->willReturn($productRepo);
-
-        $this->expectException(\InvalidArgumentException::class);
-        $this->priceCalculator->calculate(999, 'DE123456789');
-    }
 
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->taxCalculator = new TaxCalculator();
         $this->priceCalculator = new PriceCalculator(
-            $this->entityManager,
             $this->taxCalculator
         );
     }

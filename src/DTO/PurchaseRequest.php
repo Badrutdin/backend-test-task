@@ -2,39 +2,38 @@
 
 namespace App\DTO;
 
+use App\Entity\Coupon;
+use App\Entity\Product;
+use App\Enum\PaymentProcessTypeEnum;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class PurchaseRequest
 {
     #[Assert\NotBlank]
-    #[Assert\Positive]
-    private int $product;
-
+    private Product $product;
     #[Assert\NotBlank]
-    #[Assert\Choice(['paypal', 'stripe'])]
+    #[Assert\Choice(callback: [PaymentProcessTypeEnum::class, 'getValues'])]
     private string $paymentProcessor;
-
     #[Assert\NotBlank]
     #[Assert\Regex(
         pattern: '/^(DE\d{9}|IT\d{11}|GR\d{9}|FR[A-Z]{2}\d{9})$/',
         message: 'Tax number must start with a valid country code (DE, IT, GR, FR) and the correct length.'
     )]
     private string $taxNumber;
+    private ?Coupon $couponCode = null;
 
-    #[Assert\Length(min: 3)]
-    private ?string $couponCode = null;
-
-    // Геттеры и сеттеры
-    public function getProduct(): int
+    public function getProduct(): Product
     {
         return $this->product;
     }
 
-    public function setProduct(int $product): self
+    public function setProduct(Product $product): self
     {
         $this->product = $product;
         return $this;
     }
+
+    // Геттеры и сеттеры
 
     public function getPaymentProcessor(): string
     {
@@ -58,14 +57,15 @@ class PurchaseRequest
         return $this;
     }
 
-    public function getCouponCode(): ?string
+    public function getCoupon(): ?Coupon
     {
         return $this->couponCode;
     }
 
-    public function setCouponCode(?string $couponCode): self
+    public function setCoupon(?Coupon $couponCode): self
     {
         $this->couponCode = $couponCode;
         return $this;
     }
+
 } 

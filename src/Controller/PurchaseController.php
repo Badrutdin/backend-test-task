@@ -3,57 +3,43 @@
 namespace App\Controller;
 
 use App\DTO\PurchaseRequest;
+use App\Resolver\PurchaseRequestValueResolver;
 use App\Service\PaymentProcessor\PaymentProcessorFactory;
 use App\Service\PriceCalculator;
+use InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+
 
 #[Route('/purchase', name: 'app_purchase', methods: ['POST'])]
 class PurchaseController extends AbstractController
 {
     public function __construct(
         private PriceCalculator         $priceCalculator,
-        private PaymentProcessorFactory $processorFactory,
-        private SerializerInterface     $serializer,
-        private ValidatorInterface      $validator
+        private PaymentProcessorFactory $processorFactory
     )
     {
     }
 
-    public function __invoke(Request $request): Response
+    public function __invoke(
+        #[MapRequestPayload(resolver: PurchaseRequestValueResolver::class)] PurchaseRequest $purchaseRequest
+    ): Response
     {
-        try {
-            $purchaseRequest = $this->serializer->deserialize(
-                $request->getContent(),
-                PurchaseRequest::class,
-                'json'
-            );
-            $violations = $this->validator->validate($purchaseRequest);
+        $finalPrice = $this->priceCalculator->calculate(
+            $purchaseRequest->getProduct(),
+            $purchaseRequest->getTaxNumber(),
+            $purchaseRequest->getCoupon()
+        );
 
-            if (count($violations) > 0) {
-                $errorMessages = [];
-                foreach ($violations as $violation) {
-                    $errorMessages[$violation->getPropertyPath()] = $violation->getMessage() . ' Received: ' . $violation->getInvalidValue(); // Извлекаем сообщения о нарушениях
-                }
-                return $this->json(['errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
-            }
-            $finalPrice = $this->priceCalculator->calculate(
-                $purchaseRequest->getProduct(),
-                $purchaseRequest->getTaxNumber(),
-                $purchaseRequest->getCouponCode()
-            );
-            $processor = $this->processorFactory->create($purchaseRequest->getPaymentProcessor());
-            $success = $processor->process($finalPrice);
+        $processor = $this->processorFactory->create($purchaseRequest->getPaymentProcessor());
+        $success = $processor->process($finalPrice);
 
-            if (!$success) throw new \Exception('Payment failed');
-
-            return $this->json(['status' => 'success']);
-        } catch (\Exception $e) {
-            return $this->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        if (!$success) {
+            throw new InvalidArgumentException('Payment failed', 400);
         }
+
+        return $this->json(['status' => 'success']);
     }
 }

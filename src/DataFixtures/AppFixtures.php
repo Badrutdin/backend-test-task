@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Product;
 use App\Entity\Coupon;
+use App\Enum\CouponTypeEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -30,13 +31,13 @@ class AppFixtures extends Fixture
         // Создаем купоны
         $percentCoupon = new Coupon();
         $percentCoupon->setCode('P15');
-        $percentCoupon->setType('percentage');
+        $percentCoupon->setType(CouponTypeEnum::PERCENTAGE->value);
         $percentCoupon->setValue(15);
         $manager->persist($percentCoupon);
 
         $fixedCoupon = new Coupon();
         $fixedCoupon->setCode('F100');
-        $fixedCoupon->setType('fixed');
+        $fixedCoupon->setType(CouponTypeEnum::FIXED->value);
         $fixedCoupon->setValue(100);
         $manager->persist($fixedCoupon);
 

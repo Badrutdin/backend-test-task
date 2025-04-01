@@ -2,13 +2,14 @@
 
 namespace App\DTO;
 
+use App\Entity\Coupon;
+use App\Entity\Product;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class CalculatePriceRequest
 {
     #[Assert\NotBlank]
-    #[Assert\Type('integer')]
-    private int $product;
+    private Product $product;
 
     #[Assert\NotBlank]
     #[Assert\Regex(
@@ -17,15 +18,14 @@ class CalculatePriceRequest
     )]
     private string $taxNumber;
 
-    #[Assert\Length(max: 50)]
-    private ?string $couponCode = null;
+    private ?Coupon $coupon = null;
 
-    public function getProduct(): int
+    public function getProduct(): Product
     {
         return $this->product;
     }
 
-    public function setProduct(int $product): self
+    public function setProduct(Product $product): self
     {
         $this->product = $product;
         return $this;
@@ -42,14 +42,14 @@ class CalculatePriceRequest
         return $this;
     }
 
-    public function getCouponCode(): ?string
+    public function getCoupon(): ?Coupon
     {
-        return $this->couponCode;
+        return $this->coupon;
     }
 
-    public function setCouponCode(?string $couponCode): self
+    public function setCoupon(?Coupon $coupon): self
     {
-        $this->couponCode = $couponCode;
+        $this->coupon = $coupon;
         return $this;
     }
-} 
+}

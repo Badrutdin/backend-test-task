@@ -12,7 +12,7 @@ class PurchaseControllerTest extends WebTestCase
         $client = static::createClient();
 
         $data = [
-            'product' => 1,
+            'productId' => 1,
             'paymentProcessor' => 'paypal',
             'taxNumber' => 'DE123456789',
             'couponCode' => 'F100'
@@ -24,9 +24,7 @@ class PurchaseControllerTest extends WebTestCase
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode($data)
         );
-
         $response = $client->getResponse();
-
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertJsonStringEqualsJsonString(json_encode(['status' => 'success']), $response->getContent());
@@ -37,7 +35,7 @@ class PurchaseControllerTest extends WebTestCase
         $client = static::createClient();
 
         $data = [
-            'product' => 1,
+            'productId' => 1,
             'paymentProcessor' => 'paypal',
             'taxNumber' => 'DE1234567891',
             'couponCode' => 'F100'
@@ -55,7 +53,7 @@ class PurchaseControllerTest extends WebTestCase
         $this->assertEquals(400, $response->getStatusCode());
 
         $responseData = json_decode($response->getContent(), true);
-        $this->assertArrayHasKey('errors', $responseData);
+        $this->assertArrayHasKey('error', $responseData);
     }
 
     public function testPurchaseDeserializationError(): void
@@ -63,7 +61,7 @@ class PurchaseControllerTest extends WebTestCase
         $client = static::createClient();
 
         $data = [
-            'product' => 'INVALID_PRODUCT_TYPE',
+            'productId' => 'INVALID_PRODUCT_TYPE',
             'paymentProcessor' => 'paypal',
             'taxNumber' => 'DE123456789',
             'couponCode' => 'F100'
@@ -89,7 +87,7 @@ class PurchaseControllerTest extends WebTestCase
         $client = static::createClient();
 
         $data = [
-            'product' => 1,
+            'productId' => 1,
             'paymentProcessor' => 'stripe',
             'taxNumber' => 'DE123456789',
             'couponCode' => 'F100'
@@ -99,7 +97,8 @@ class PurchaseControllerTest extends WebTestCase
             method: 'POST',
             uri: '/purchase',
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode($data));
+            content: json_encode($data)
+        );
 
         $response = $client->getResponse();
 

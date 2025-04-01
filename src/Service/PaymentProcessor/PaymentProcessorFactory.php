@@ -23,7 +23,7 @@ class PaymentProcessorFactory
     {
 
         if (!isset($this->processors[$type])) {
-            throw new \InvalidArgumentException("Invalid payment processor type: $type");
+            throw new \InvalidArgumentException("Invalid payment processor type: $type",400);
         }
 
         return $this->processors[$type];
